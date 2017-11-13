@@ -1,0 +1,28 @@
+{
+  "name": "redux-reset-state",
+  "version": "0.1",
+  "description": "A redux plugin to reset the redux state you specify",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cadleo/redux-reset-state.git"
+  },
+  "keywords": [
+    "redux",
+    "reset",
+    "redux-reset-state"
+  ],
+  "author": "cadleo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cadleo/redux-reset-state/issues"
+  },
+  "homepage": "https://github.com/cadleo/redux-reset-state#readme",
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "react": "^16.1.0"
+  }
+}
