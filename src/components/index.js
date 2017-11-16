@@ -9,6 +9,6 @@ export default stateKeys => WrappedComponent => class ReduxResetHOC extends Comp
   }
 
   render() {
-    return <WrappedComponent {...this.props} />;
+    return <WrappedComponent resetReduxState={resetReduxState} {...this.props} />;
   }
 }
