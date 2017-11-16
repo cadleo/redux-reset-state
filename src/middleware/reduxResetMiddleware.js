@@ -7,7 +7,7 @@ const defaultResetActionType = '@@redux-reset-state/RESET';
 function createResetReduxStateFunction({ dispatch, getState }) {
   cacheInitialState = cloneDeep(getState());
   if(process.env.NODE_ENV !== 'production') {
-    console.log('The redux initialState has deeply cloned and cached', cacheInitialState);
+    console.log('The redux initialState has been deeply cloned and cached:', cacheInitialState);
   }
   return (payload) => {
     dispatch({
