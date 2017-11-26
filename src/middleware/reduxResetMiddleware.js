@@ -29,10 +29,11 @@ export function composeRootReducer(rootReducer) {
                         : (isObject(payload) && isArray(payload.stateKeys)) 
                           ? payload.stateKeys 
                           : throwPayloadError();
+      const newState = { ...state };
       stateKeys.forEach(key => {
-        !isUndefined(cacheInitialState[key]) && (state[key] = cloneDeep(cacheInitialState[key]));
+        !isUndefined(cacheInitialState[key]) && (newState[key] = cloneDeep(cacheInitialState[key]));
       })
-      return { ...state };
+      return newState;
     }
     return rootReducer(state, action);
   }
