@@ -1,4 +1,4 @@
-import ReduxResetHOC from './components'
+import reduxResetHOC from './components'
 import resetMiddleware, { composeRootReducer, resetReduxState } from './middleware/reduxResetMiddleware'
 
-export { composeRootReducer, resetReduxState, resetMiddleware, ReduxResetHOC as default }
+export { composeRootReducer, resetReduxState, resetMiddleware, reduxResetHOC as default }
