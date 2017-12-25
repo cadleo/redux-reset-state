@@ -1,10 +1,12 @@
 {
   "name": "redux-reset-state",
-  "version": "0.1",
+  "version": "0.2.0",
   "description": "A redux plugin to reset the redux state you specify",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf lib",
+    "build:lib": "babel src --out-dir lib"
   },
   "repository": {
     "type": "git",
@@ -16,13 +18,27 @@
     "redux-reset-state"
   ],
   "author": "cadleo",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/cadleo/redux-reset-state/issues"
   },
   "homepage": "https://github.com/cadleo/redux-reset-state#readme",
   "dependencies": {
     "lodash": "^4.17.4",
-    "react": "^16.1.0"
+    "react": "^16.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.1",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-syntax-class-properties": "^6.13.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "rimraf": "^2.6.2"
   }
 }
