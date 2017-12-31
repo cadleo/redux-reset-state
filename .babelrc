@@ -7,13 +7,13 @@
           "browsers": [
             "ie >= 11"
           ]
-        },
-        "useBuiltIns": true
+        }
       }
     ],
     ["react"]
   ],
   "plugins": [
+    "transform-runtime",
     "transform-object-rest-spread",
     "transform-class-properties"
   ]
