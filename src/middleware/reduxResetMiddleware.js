@@ -1,8 +1,11 @@
-import { cloneDeep, isArray, isObject, isUndefined } from 'lodash/fp'
+import { cloneDeep, isArray, isPlainObject, isUndefined, path, isString } from 'lodash/fp'
+import { shallowCopyObjectOnThePathAndAssignTheLast } from './utils'
 
 let cacheInitialState = {};
-let resetActionType = '';
-const defaultResetActionType = '@@redux-reset-state/RESET';
+const config = {
+  keyDelimiter: '.',
+  resetActionType: '@@redux-reset-state/RESET'
+}
 
 function createResetReduxStateFunction({ dispatch, getState }) {
   cacheInitialState = cloneDeep(getState());
@@ -11,27 +14,49 @@ function createResetReduxStateFunction({ dispatch, getState }) {
   }
   return (payload) => {
     dispatch({
-      type: resetActionType,
+      type: config.resetActionType,
       payload: payload
     })
   }
-}
-function throwPayloadError() {
-  throw new Error('Expected the arg to be a array or an object which has a array-type property named `stateKeys`')
 }
 
 export function composeRootReducer(rootReducer) {
   return (state, action) => {
     const { type, payload } = action;
-    if(type === resetActionType) {
-      const stateKeys = isArray(payload) 
-                        ? payload 
-                        : (isObject(payload) && isArray(payload.stateKeys)) 
-                          ? payload.stateKeys 
-                          : throwPayloadError();
+    if (type === config.resetActionType) {
+      if (process.env.NODE_ENV !== 'production') {
+        if (!isArray(payload) && !isPlainObject(payload)) {
+          throw new Error('Expected the payload of action to be an array or a plain-object');
+        }
+        const typeArr = [];
+        const isValidated = payload.every(k => {
+          const isStringType = isString(k);
+          !isStringType && typeArr.push(Object.prototype.toString.call(k));
+          return isStringType;
+        })
+        if (isArray(payload) && !isValidated) {
+          throw new Error(`Expected the member of payload to be a string but got '${typeArr.join(' or ')}'`);
+        }
+      }
       const newState = { ...state };
+      const stateKeys = (isArray(payload) ? payload : Object.keys(payload));
+      const stateKeysMap = stateKeys.reduce((obj, key) => {
+        const pathArr = key.split(config.keyDelimiter).filter(k => k !== '');
+        obj[key] = {
+          pathArr,
+          initState: isArray(payload) ? cloneDeep(path(pathArr)(cacheInitialState)) : payload[key]
+        };
+        return obj;
+      }, {});
       stateKeys.forEach(key => {
-        !isUndefined(cacheInitialState[key]) && (newState[key] = cloneDeep(cacheInitialState[key]));
+        const { pathArr, initState } = stateKeysMap[key];
+        if (!isUndefined(initState)) {
+          shallowCopyObjectOnThePathAndAssignTheLast(pathArr, newState, cloneDeep(initState));
+        } else {
+          if (process.env.NODE_ENV !== 'production') {
+            console.warn(`The initState matched '${key}' is undefined, please make sure that the spelling is correct`);
+          }
+        }
       })
       return newState;
     }
@@ -39,16 +64,25 @@ export function composeRootReducer(rootReducer) {
   }
 }
 
-let realResetReduxState = () => {};
-export const resetReduxState = (...arg) => realResetReduxState(...arg);
-function createResetMiddleware(actionType = defaultResetActionType) {
-  resetActionType = actionType;
-  return ({ dispatch, getState }) => next => {
-    realResetReduxState = createResetReduxStateFunction({ dispatch, getState });
-    return action => next(action);
+let realResetReduxState = () => {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(`Please install the 'resetMiddleware' with 'applyMiddleware' first`);
   }
+};
+export const resetReduxState = (...arg) => realResetReduxState(...arg);
+export const resetMiddleware = ({ dispatch, getState }) => next => {
+  realResetReduxState = createResetReduxStateFunction({ dispatch, getState });
+  return action => next(action);
 }
-const resetMiddleware = createResetMiddleware();
-resetMiddleware.withResetActionType = createResetMiddleware;
+
+resetMiddleware.setConfig = obj => {
+  if (process.env.NODE_ENV !== 'production') {
+    if (isPlainObject(obj)) {
+      console.warn(`The arg of 'setConfig' must be a plain-object`);
+      return 
+    }
+  }
+  Object.assign(config, obj);
+}
 
 export { resetMiddleware as default }
