@@ -12,10 +12,10 @@ function createResetReduxStateFunction({ dispatch, getState }) {
   if(process.env.NODE_ENV !== 'production') {
     console.log('The redux initialState has been deeply cloned and cached:', cacheInitialState);
   }
-  return (payload) => {
+  return payload => {
     dispatch({
       type: config.resetActionType,
-      payload: payload
+      payload
     })
   }
 }
@@ -35,7 +35,7 @@ export function composeRootReducer(rootReducer) {
           return isStringType;
         })
         if (isArray(payload) && !isValidated) {
-          throw new Error(`Expected the member of payload to be a string but got '${typeArr.join(' or ')}'`);
+          throw new Error(`Expected the member of payload to be a string but got '${typeArr.join(' and ')}'`);
         }
       }
       const newState = { ...state };
@@ -44,6 +44,7 @@ export function composeRootReducer(rootReducer) {
         const pathArr = key.split(config.keyDelimiter).filter(k => k !== '');
         obj[key] = {
           pathArr,
+          // cloneDeep for some impure reducers
           initState: isArray(payload) ? cloneDeep(path(pathArr)(cacheInitialState)) : payload[key]
         };
         return obj;
@@ -51,7 +52,7 @@ export function composeRootReducer(rootReducer) {
       stateKeys.forEach(key => {
         const { pathArr, initState } = stateKeysMap[key];
         if (!isUndefined(initState)) {
-          shallowCopyObjectOnThePathAndAssignTheLast(pathArr, newState, cloneDeep(initState));
+          shallowCopyObjectOnThePathAndAssignTheLast(pathArr, newState, initState);
         } else {
           if (process.env.NODE_ENV !== 'production') {
             console.warn(`The initState matched '${key}' is undefined, please make sure that the spelling is correct`);
@@ -71,6 +72,7 @@ let realResetReduxState = () => {
 };
 export const resetReduxState = (...arg) => realResetReduxState(...arg);
 export const resetMiddleware = ({ dispatch, getState }) => next => {
+  // The next line of code will be executed only once after `dispatch({ type: ActionTypes.INIT })`
   realResetReduxState = createResetReduxStateFunction({ dispatch, getState });
   return action => next(action);
 }
