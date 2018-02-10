@@ -3,6 +3,5 @@ package-lock.json
 *.log
 
 src/
-node_modules/
 
 .DS_Store
