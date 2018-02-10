@@ -1,6 +1,6 @@
 {
   "name": "redux-reset-state",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A redux plugin to reset the redux state you specify",
   "main": "lib/index.js",
   "scripts": {
