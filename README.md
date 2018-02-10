@@ -43,8 +43,9 @@ import resetStateWhenUnmount, { resetReduxState } from 'redux-reset-state'
 export default class Page extends Component {
   onClick = () => {
     this.props.resetReduxState === resetReduxState // true
-    // You also can use it like this    
+    // You can also use it like this    
     this.props.resetReduxState(['exampleStateKey', 'exampleStateKey2.subState1'])
+    
     // this is also supported, please make sure that the `exampleState` and `initSubState1`
     // is correct initState-shape whitch matched the stateKeys
     this.props.resetReduxState({
