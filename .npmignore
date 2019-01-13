@@ -4,4 +4,6 @@ package-lock.json
 
 src/
 
+test/
+
 .DS_Store
