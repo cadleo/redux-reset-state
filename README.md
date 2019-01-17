@@ -29,7 +29,7 @@ Now the `resetStateWhenUnmount` has been remove from the package, you can copy t
 
 ```js
 import React, { Component } from 'react'
-import { resetReduxState } from '../middleware/reduxResetMiddleware'
+import { resetReduxState } from 'redux-reset-state'
 
 export default function (stateKeys) {
 
