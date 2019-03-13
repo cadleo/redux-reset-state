@@ -49,7 +49,7 @@ test('test redux-reset-state package', () => {
   expect(store.getState()).toEqual({ state: { state: { 'a-b': 'aabb', a: 'aa', b: 'bb' } } });
 
   let prevState = store.getState();
-  resetReduxState(['state.state.a'])
+  resetReduxState([['state', 'state', 'a']])
   expect(store.getState().state.state.a).toBe(initA);
   expect(store.getState().state.state.b).toBe('bb');
   expect(store.getState().state.state['a-b']).toBe('aabb');
@@ -57,7 +57,7 @@ test('test redux-reset-state package', () => {
   expect(store.getState().state.state === prevState.state.state).toBe(false);
   prevState = store.getState();
 
-  resetReduxState(['state.state["a-b"]'])
+  resetReduxState([['state', 'state', 'a-b']])
   expect(store.getState().state.state.a).toBe(initA);
   expect(store.getState().state.state.b).toBe('bb');
   expect(store.getState().state.state['a-b']).toBe(initAB);
@@ -65,7 +65,7 @@ test('test redux-reset-state package', () => {
   expect(store.getState().state.state === prevState.state.state).toBe(false);
   prevState = store.getState();
 
-  resetReduxState(["state.state['b']"])
+  resetReduxState([['state', 'state', 'b']])
   expect(store.getState().state.state.a).toBe(initA);
   expect(store.getState().state.state.b).toBe(initB);
   expect(store.getState().state.state['a-b']).toBe(initAB);
@@ -73,15 +73,15 @@ test('test redux-reset-state package', () => {
   expect(store.getState().state.state === prevState.state.state).toBe(false);
   prevState = store.getState();
 
-  resetReduxState([''])
+  resetReduxState([['']])
   expect(store.getState() === prevState).toBe(false);
   expect(store.getState().state === prevState.state).toBe(true);
   prevState = store.getState();
   
   try {
-    resetReduxState(["state.state['b']['b']['b']"])
+    resetReduxState([['state', 'state', 'b', 'b', 'b']])
   } catch (e) {
-    expect(e.message).toContain(`if you are sure that your application state has the fields you want to reset, maybe the stateKeys containing nested strings '.' or '[]'`);
+    expect(e.message).toContain(`here is your key-path`);
     console.warn(e.message)
   }
 })

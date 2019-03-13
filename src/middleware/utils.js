@@ -1,5 +1,4 @@
-export function updateNewStateWithShallowCopy(state, keyStr, endValue) {
-  const keyPath = keysToKeyPath(keyStr);
+export function updateNewStateWithShallowCopy(state, keyPath, endValue) {
   keyPath.reduce((object, key, index) => {
     object[key] = (index === keyPath.length - 1) ? endValue : { ...object[key] };
     object = object[key];
@@ -20,21 +19,7 @@ export function isArray(v) {
   return Array.isArray(v);
 }
 
-/**
- * Convert keys to key-path, for exzample: `'key[0].state.state["state-state"]'` ==> `["key", "0", "state", "state", "state-state"]`
- * The keys containing nested strings `'.'` and `'[]'` cannot be parsed correctly now, for example, `'key[0].state["state[a].state"]'`
- * @param {string} keys 
- * @returns {Array}
- */
-export function keysToKeyPath(keys) {
-  return keys === '' ? [''] : keys.split('.').reduce((arr, key) => {
-    var list = key.split('[').map(s => s.replace(/\]/g, '').replace(/\'|\"/g, '')).filter(i => i);
-    return arr.concat(list)
-  }, []);
-}
-
-export function getField(data, keyStr) {
-  const keyPath = keysToKeyPath(keyStr);
+export function getField(data, keyPath) {
   let value;
   try {
     value = data;
@@ -42,13 +27,12 @@ export function getField(data, keyStr) {
       value = value[keyPath[i]];
     }
   } catch (e) {
-    const message = `, here is your stateKeys: ${keyStr}, it has been converted to: ${JSON.stringify(keyPath)}, if you are sure that your application state has the fields you want to reset, ` + 
-    `maybe the stateKeys containing nested strings '.' or '[]', for example, 'state["state[a].state"]', it cannot be parsed correctly`;
+    const message = `, here is your key-path: ${JSON.stringify(keyPath)}, please make sure that your application state has the fields you want to reset`;
     const err = new Error(e.message + message)
     throw err
   }
   if (process.env.NODE_ENV !== 'production') {
-    isUndefined(value) && console.warn(`The fields of your application state matched stateKeys ['${keyStr}'] is undefined, please make sure that the spelling is correct`);
+    isUndefined(value) && console.warn(`The fields of your application state matched key-path ${JSON.stringify(keyPath)} is undefined, please make sure that the spelling is correct`);
   }
   return value
 }

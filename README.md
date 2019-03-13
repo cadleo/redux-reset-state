@@ -19,8 +19,8 @@ const store = createStore(composeRootReducer(rootReducer), initialState, applyMi
 ))
 
 // If the shape of your application state is like this: { state: { key: { "state-key": 'value' } } }, 
-// you can call the following line of code to reset the state: 
-resetReduxState(['state.key["state-key"]', 'state["key"]'])
+// you can exec the following line of code to reset the state: 
+resetReduxState([['state', 'key', 'state-key'], ['state', 'key']])
 
 ```
 ## Hoc in React application
@@ -35,7 +35,7 @@ export default function (stateKeys) {
 
   return function wrapWithRedsetStateWhenUnmount(WrappedComponent) {
     class RedsetStateWhenUnmount extends Component {
-      static displayName = `Reset(${stateKeys})(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`
+      static displayName = `Reset(${JSON.stringify(stateKeys)})(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`
       
       componentWillUnmount() {
         resetReduxState(stateKeys)

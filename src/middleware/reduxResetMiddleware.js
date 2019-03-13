@@ -25,21 +25,35 @@ export function composeRootReducer(rootReducer) {
         throw new Error('Expected the payload of action to be an array');
       }
 
+      if (!stateKeys.length) {
+        return state;
+      }
+
       const typeArr = [];
-      const isValid = stateKeys.every(k => {
-        const isStringType = isString(k);
-        !isStringType && typeArr.push(Object.prototype.toString.call(k));
-        return isStringType;
-      })
+      let isValid = stateKeys.every(k => {
+        const isArrayType = isArray(k);
+        !isArrayType && typeArr.push(typeof k);
+        return isArrayType;
+      });
       if (!isValid) {
-        throw new Error(`Expected the member of payload to be a string but got '${typeArr.join(' and ')}'`);
+        throw new Error(`Expected the member of payload to be an array but got '${typeArr.join(' and ')}'`);
+      }
+      
+      isValid = stateKeys.every(arr => arr.every(k => {
+        // string or number is valid
+        const isValidType = isString(k) || (parseInt(k) === k);
+        !isValidType && typeArr.push(typeof k);
+        return isValidType;
+      }));
+      if (!isValid) {
+        throw new Error(`Expected the member of key-path-array to be a string or number but got '${typeArr.join(' and ')}'`);
       }
 
       const newState = { ...state };
-      stateKeys.forEach(keyStr => {
+      stateKeys.forEach(keyPath => {
         // cloneDeep for some impure reducers
-        const initState = cloneDeep(getField(cacheInitialState, keyStr));
-        updateNewStateWithShallowCopy(newState, keyStr, initState);
+        const initState = cloneDeep(getField(cacheInitialState, keyPath));
+        updateNewStateWithShallowCopy(newState, keyPath, initState);
       })
       return newState;
     }
