@@ -2,7 +2,7 @@ import { resetReduxState, composeRootReducer, resetMiddleware } from '../../src/
 import { createStore, applyMiddleware } from 'redux'
 
 const reducer = (state, action) => {
-  const newState = { ...state };
+  let newState = { ...state };
   switch (action.type) {
     case 'update-a':
       newState.state = { ...newState.state };
@@ -20,7 +20,8 @@ const reducer = (state, action) => {
       newState.state.state['a-b'] = action.payload;
       break;
   
-    default:
+    default: 
+      newState = state;
   }
   return newState === state ? state : newState;
 }
@@ -49,30 +50,37 @@ test('test redux-reset-state package', () => {
   expect(store.getState()).toEqual({ state: { state: { 'a-b': 'aabb', a: 'aa', b: 'bb' } } });
 
   let prevState = store.getState();
+  store.dispatch({
+    type: 'not-exist-reducer',
+    payload: 'aabb'
+  })
+  expect(store.getState() === prevState).toBe(true);
+
+  prevState = store.getState();
   resetReduxState([['state', 'state', 'a']])
   expect(store.getState().state.state.a).toBe(initA);
   expect(store.getState().state.state.b).toBe('bb');
   expect(store.getState().state.state['a-b']).toBe('aabb');
   expect(store.getState().state === prevState.state).toBe(false);
   expect(store.getState().state.state === prevState.state.state).toBe(false);
+  
   prevState = store.getState();
-
   resetReduxState([['state', 'state', 'a-b']])
   expect(store.getState().state.state.a).toBe(initA);
   expect(store.getState().state.state.b).toBe('bb');
   expect(store.getState().state.state['a-b']).toBe(initAB);
   expect(store.getState().state === prevState.state).toBe(false);
   expect(store.getState().state.state === prevState.state.state).toBe(false);
+  
   prevState = store.getState();
-
   resetReduxState([['state', 'state', 'b']])
   expect(store.getState().state.state.a).toBe(initA);
   expect(store.getState().state.state.b).toBe(initB);
   expect(store.getState().state.state['a-b']).toBe(initAB);
   expect(store.getState().state === prevState.state).toBe(false);
   expect(store.getState().state.state === prevState.state.state).toBe(false);
+  
   prevState = store.getState();
-
   resetReduxState([['']])
   expect(store.getState() === prevState).toBe(false);
   expect(store.getState().state === prevState.state).toBe(true);
