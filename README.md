@@ -18,9 +18,24 @@ const store = createStore(composeRootReducer(rootReducer), initialState, applyMi
   resetMiddleware
 ))
 
-// If the shape of your application state is like this: { state: { key: { "state-key": 'value' } } }, 
-// you can exec the following line of code to reset the state: 
-resetReduxState([['state', 'key', 'state-key'], ['state', 'key']])
+// If the shape of your application state is like this: 
+store.getState() // --> { state: { key: { "state-key": 'value', key2: 'value2' } } };
+
+// Then you dispatch some actions:  
+store.dispatch({
+  type: 'some valid action'
+  payload: 'some valid payload'
+})
+// And the application state became this shape:
+store.getState() // --> { state: { key: { "state-key": 'new-value', key2: 'new-value2' } } }
+
+// You can use the following code to reset the state:
+resetReduxState([['state', 'key', 'state-key'], ['state', 'key', 'key2']])
+// or:
+resetReduxState([['state', 'key']])
+
+// Then the application state will become like this:
+store.getState() // --> { state: { key: { "state-key": 'value', key2: 'value2' } } }
 
 ```
 ## Hoc in React application
@@ -55,7 +70,7 @@ export default function (stateKeys) {
 #### composeRootReducer
 It is used to wrap the `rootReducer` of your application  
 #### resetMiddleware
-When the redux store is created, the `resetMiddleware` will be called, then `resetMiddleware` will deeply clone and cache the initial state of your application
+When the redux store is created, the `resetMiddleware` will be executed, then `resetMiddleware` will deeply clone and cache the initial state of your application
 #### resetReduxState
 See the usage above  
 
