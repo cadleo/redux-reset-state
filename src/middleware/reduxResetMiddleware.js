@@ -41,7 +41,7 @@ export function composeRootReducer(rootReducer) {
       
       isValid = stateKeys.every(arr => arr.every(k => {
         // string or number is valid
-        const isValidType = isString(k) || (parseInt(k) === k);
+        const isValidType = isString(k) || (parseFloat(k) === k);
         !isValidType && typeArr.push(typeof k);
         return isValidType;
       }));
